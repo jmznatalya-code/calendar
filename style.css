@@ -1,24 +1,24 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --black: #000;
+  --black: #1a3a1a;
   --white: #fff;
-  --grey-1: #111;
-  --grey-2: #333;
-  --grey-3: #555;
-  --grey-4: #888;
-  --grey-5: #aaa;
-  --grey-6: #ccc;
-  --grey-7: #e4e4e4;
-  --grey-8: #f2f2f2;
-  --text: #111;
-  --text-muted: #888;
-  --border: #ccc;
+  --grey-1: #1a3a1a;
+  --grey-2: #2d5a2d;
+  --grey-3: #3d7a3d;
+  --grey-4: #6aaa6a;
+  --grey-5: #8aba8a;
+  --grey-6: #b8d4b8;
+  --grey-7: #e0ede0;
+  --grey-8: #f0f7f0;
+  --text: #1a3a1a;
+  --text-muted: #6aaa6a;
+  --border: #b8d4b8;
   --bg: #fff;
-  --today-bg: #000;
+  --today-bg: #1a3a1a;
   --today-text: #fff;
-  --weekend: #f2f2f2;
-  --other-month: #aaa;
+  --weekend: #f0f7f0;
+  --other-month: #8aba8a;
   --header-h: 48px;
   --nav-h: 38px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
