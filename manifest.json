@@ -2,7 +2,7 @@
   "name": "Calendar",
   "short_name": "Calendar",
   "description": "Lightweight calendar PWA with month, week, day, and year views",
-  "start_url": "./",
+  "start_url": "/calendar/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#2563eb",
