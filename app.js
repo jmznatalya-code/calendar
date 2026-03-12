@@ -363,27 +363,30 @@ function showDayModal(y, m, d) {
   if (evs.length === 0) {
     evList.appendChild(el('div', 'modal-empty', 'No events'));
   } else {
-    evs.forEach(ev => {
+    evs.forEach((ev, idx) => {
       const item = el('div', 'modal-ev');
-      item.innerHTML = `<div class="modal-ev-time">${ev.time || 'All day'}</div>
+      const info = el('div', 'modal-ev-info');
+      info.innerHTML = `<div class="modal-ev-time">${ev.time || 'All day'}</div>
         <div class="modal-ev-title">${escHtml(ev.title)}</div>`;
+      const actions = el('div', 'modal-ev-actions');
+      const editBtn = el('button', 'modal-ev-btn', 'edit');
+      editBtn.addEventListener('click', () => { backdrop.remove(); showEditEvent(y, m, d, idx); });
+      const delBtn = el('button', 'modal-ev-btn del', 'del');
+      delBtn.addEventListener('click', () => { deleteEvent(y, m, d, idx); backdrop.remove(); showDayModal(y, m, d); });
+      actions.appendChild(editBtn);
+      actions.appendChild(delBtn);
+      item.appendChild(info);
+      item.appendChild(actions);
       evList.appendChild(item);
     });
   }
   modal.appendChild(evList);
 
-  // Add event button
-  const addBtn = el('button', 'modal-close', '+ Add Event');
-  addBtn.style.background = 'var(--blue)';
-  addBtn.style.color = '#fff';
-  addBtn.style.marginTop = '8px';
-  addBtn.addEventListener('click', () => {
-    backdrop.remove();
-    showAddEvent(y, m, d);
-  });
+  const addBtn = el('button', 'modal-btn primary', '+ Add Event');
+  addBtn.addEventListener('click', () => { backdrop.remove(); showAddEvent(y, m, d); });
   modal.appendChild(addBtn);
 
-  const closeBtn = el('button', 'modal-close', 'Close');
+  const closeBtn = el('button', 'modal-btn', 'Close');
   closeBtn.addEventListener('click', () => backdrop.remove());
   modal.appendChild(closeBtn);
 
@@ -400,15 +403,12 @@ function showAddEvent(y, m, d) {
   modal.innerHTML = `<div class="modal-handle"></div>
     <h2>New Event</h2>
     <div class="modal-date">${DAYS[dt.getDay()]}, ${MONTHS[m]} ${d}, ${y}</div>
-    <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px;">
-      <input id="ev-title" type="text" placeholder="Event title" style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:15px;background:var(--bg);color:var(--text);">
-      <input id="ev-time" type="time" placeholder="Time (optional)" style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:15px;background:var(--bg);color:var(--text);">
+    <div class="modal-form">
+      <input id="ev-title" type="text" class="modal-input" placeholder="Event title">
+      <input id="ev-time" type="time" class="modal-input">
     </div>`;
 
-  const saveBtn = el('button', 'modal-close', 'Save');
-  saveBtn.style.background = 'var(--blue)';
-  saveBtn.style.color = '#fff';
-  saveBtn.style.marginTop = '12px';
+  const saveBtn = el('button', 'modal-btn primary', 'Save');
   saveBtn.addEventListener('click', () => {
     const title = modal.querySelector('#ev-title').value.trim();
     if (!title) return;
@@ -422,7 +422,7 @@ function showAddEvent(y, m, d) {
   });
   modal.appendChild(saveBtn);
 
-  const cancelBtn = el('button', 'modal-close', 'Cancel');
+  const cancelBtn = el('button', 'modal-btn', 'Cancel');
   cancelBtn.addEventListener('click', () => backdrop.remove());
   modal.appendChild(cancelBtn);
 
@@ -430,6 +430,54 @@ function showAddEvent(y, m, d) {
   backdrop.addEventListener('click', e => { if (e.target === backdrop) backdrop.remove(); });
   document.body.appendChild(backdrop);
   setTimeout(() => modal.querySelector('#ev-title').focus(), 100);
+}
+
+function showEditEvent(y, m, d, idx) {
+  const key = dateKey(y, m, d);
+  const ev = (state.events[key] || [])[idx];
+  if (!ev) return;
+
+  const backdrop = el('div', 'modal-backdrop');
+  const modal = el('div', 'modal');
+  const dt = new Date(y, m, d);
+
+  modal.innerHTML = `<div class="modal-handle"></div>
+    <h2>Edit Event</h2>
+    <div class="modal-date">${DAYS[dt.getDay()]}, ${MONTHS[m]} ${d}, ${y}</div>
+    <div class="modal-form">
+      <input id="ev-title" type="text" class="modal-input" placeholder="Event title" value="${escHtml(ev.title)}">
+      <input id="ev-time" type="time" class="modal-input" value="${ev.time || ''}">
+    </div>`;
+
+  const saveBtn = el('button', 'modal-btn primary', 'Save');
+  saveBtn.addEventListener('click', () => {
+    const title = modal.querySelector('#ev-title').value.trim();
+    if (!title) return;
+    const time = modal.querySelector('#ev-time').value;
+    state.events[key][idx] = { title, time };
+    saveEvents();
+    backdrop.remove();
+    render();
+  });
+  modal.appendChild(saveBtn);
+
+  const cancelBtn = el('button', 'modal-btn', 'Cancel');
+  cancelBtn.addEventListener('click', () => { backdrop.remove(); showDayModal(y, m, d); });
+  modal.appendChild(cancelBtn);
+
+  backdrop.appendChild(modal);
+  backdrop.addEventListener('click', e => { if (e.target === backdrop) backdrop.remove(); });
+  document.body.appendChild(backdrop);
+  setTimeout(() => modal.querySelector('#ev-title').focus(), 100);
+}
+
+function deleteEvent(y, m, d, idx) {
+  const key = dateKey(y, m, d);
+  if (!state.events[key]) return;
+  state.events[key].splice(idx, 1);
+  if (state.events[key].length === 0) delete state.events[key];
+  saveEvents();
+  render();
 }
 
 // ── Security ───────────────────────────────────────────────────────────────
