@@ -37,6 +37,24 @@ function loadEvents() {
 function saveEvents() { localStorage.setItem('cal_events', JSON.stringify(state.events)); }
 function getEvents(y, m, d) { return state.events[dateKey(y, m, d)] || []; }
 
+// ── Notes persistence ──────────────────────────────────────────────────────
+function noteKey() {
+  const { view, year: y, month: m, day: d } = state;
+  if (view === 'month') return `note_month_${y}-${pad(m+1)}`;
+  if (view === 'week') { const ws = getWeekStart(y, m, d); return `note_week_${ws.getFullYear()}-${pad(ws.getMonth()+1)}-${pad(ws.getDate())}`; }
+  if (view === 'day') return `note_day_${dateKey(y, m, d)}`;
+  return `note_year_${y}`;
+}
+function makeNotesArea() {
+  const key = noteKey();
+  const ta = document.createElement('textarea');
+  ta.className = 'notes-area';
+  ta.placeholder = 'notes...';
+  ta.value = localStorage.getItem(key) || '';
+  ta.addEventListener('input', () => localStorage.setItem(key, ta.value));
+  return ta;
+}
+
 // ── Render helpers ─────────────────────────────────────────────────────────
 const container = document.getElementById('view-container');
 const titleEl = document.getElementById('header-title');
@@ -88,6 +106,7 @@ function renderMonth() {
   }
 
   wrap.appendChild(grid);
+  wrap.appendChild(makeNotesArea());
   frag.appendChild(wrap);
   container.innerHTML = '';
   container.appendChild(frag);
@@ -194,6 +213,7 @@ function renderWeek() {
 
   scroll.appendChild(grid);
   wrap.appendChild(scroll);
+  wrap.appendChild(makeNotesArea());
   frag.appendChild(wrap);
   container.innerHTML = '';
   container.appendChild(frag);
@@ -248,6 +268,7 @@ function renderDay() {
 
   scroll.appendChild(grid);
   wrap.appendChild(scroll);
+  wrap.appendChild(makeNotesArea());
   frag.appendChild(wrap);
   container.innerHTML = '';
   container.appendChild(frag);
@@ -286,6 +307,7 @@ function renderYear() {
     wrap.appendChild(mini);
   }
 
+  wrap.appendChild(makeNotesArea());
   frag.appendChild(wrap);
   container.innerHTML = '';
   container.appendChild(frag);

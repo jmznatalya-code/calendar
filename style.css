@@ -109,7 +109,6 @@ html, body {
 
 .month-grid {
   display: grid; grid-template-columns: repeat(7, 1fr);
-  flex: 1;
 }
 .month-cell {
   border-right: 1px solid var(--border);
@@ -163,7 +162,7 @@ html, body {
 .week-header-cell.today .wdate { background: var(--today-bg); color: var(--today-text); }
 .week-header-cell:first-child { cursor: default; }
 
-.week-scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.week-scroll { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
 .week-grid {
   display: grid; grid-template-columns: 36px repeat(7, 1fr);
@@ -192,7 +191,7 @@ html, body {
   padding: 4px 8px; font-size: 10px; color: var(--text-muted);
   background: var(--bg); position: sticky; top: 0;
 }
-.day-scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.day-scroll { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 .day-grid { display: grid; grid-template-columns: 40px 1fr; }
 .day-time-label {
   height: 48px; display: flex; align-items: flex-start;
@@ -232,6 +231,21 @@ html, body {
 .mini-day.head { font-size: 6px; font-weight: 700; }
 .mini-day.today { background: var(--today-bg); color: var(--today-text); }
 .mini-day.other { color: var(--border); }
+
+/* Notes area */
+.notes-area {
+  flex: 1; min-height: 80px;
+  width: 100%; resize: none;
+  border: none; border-top: 1px solid var(--border);
+  background: var(--dots) var(--bg); background-size: var(--dot-sz);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px; color: var(--text);
+  padding: 8px; outline: none;
+  line-height: 20px;
+}
+.notes-area::placeholder { color: var(--grey-5); font-style: italic; }
+.week-view .notes-area,
+.day-view .notes-area { flex: none; height: 120px; }
 
 /* Event chips */
 .ev-chip {
